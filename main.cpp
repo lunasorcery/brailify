@@ -28,15 +28,19 @@ float getPixel(unsigned char* data, int w, int h, int x, int y)
 	}
 
 	int pixelOffset = ((y * w) + x) * 3;
-	float r = powf(data[pixelOffset + 0] / 255.f, 2.2f);
-	float g = powf(data[pixelOffset + 1] / 255.f, 2.2f);
-	float b = powf(data[pixelOffset + 2] / 255.f, 2.2f);
-	float val = (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
-
+	unsigned char r8 = data[pixelOffset + 0];
+	unsigned char g8 = data[pixelOffset + 1];
+	unsigned char b8 = data[pixelOffset + 2];
 	if (flagInvert)
 	{
-		val = 1.f - val;
+		r8 = 255 - r8;
+		g8 = 255 - g8;
+		b8 = 255 - b8;
 	}
+	float r = powf(r8 / 255.f, 2.2f);
+	float g = powf(g8 / 255.f, 2.2f);
+	float b = powf(b8 / 255.f, 2.2f);
+	float val = (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
 
 	if (!flagDither)
 	{
