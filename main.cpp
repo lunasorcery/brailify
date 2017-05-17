@@ -1,4 +1,5 @@
 #include <string>
+#include <getopt.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -51,33 +52,45 @@ float getPixel(unsigned char* data, int w, int h, int x, int y)
 	return val + (d - .5f);
 }
 
-int main(int argc, const char** argv)
+void parseCommandLine(int argc, char** argv)
 {
-	if (argc <= 1)
+	while (1)
 	{
-		printf("No filepath provided.\n");
-		return 1;
-	}
+		static struct option long_options[] = {
+			{ "nodither", no_argument, 0, 'n' },
+			{ "invert",   no_argument, 0, 'i' },
+			{ 0, 0, 0, 0 }
+		};
 
+		int option_index = 0;
+		int c = getopt_long(argc, argv, "ni", long_options, &option_index);
+
+		if (c == -1)
+			break;
+
+		switch (c)
+		{
+			case 'n': {
+				flagDither = false;
+				break;
+			}
+			case 'i': {
+				flagInvert = true;
+				break;
+			}
+		}
+	}
+}
+
+void processFile(const char* filepath)
+{
 	int w, h, n;
-	unsigned char *data = stbi_load(argv[argc-1], &w, &h, &n, 3);
-
-	for (int i = 1; i < argc - 1; ++i)
-	{
-		if (strcmp(argv[i], "--invert")==0)
-		{
-			flagInvert = true;
-		}
-		else if (strcmp(argv[i], "--nodither")==0)
-		{
-			flagDither = false;
-		}
-	}
+	unsigned char *data = stbi_load(filepath, &w, &h, &n, 3);
 
 	if (!data)
 	{
-		printf("Failed to load image.\n");
-		return 1;
+		printf("Failed to load image %s.\n", filepath);
+		return;
 	}
 
 	for (int y = 0; y < h; y += 4)
@@ -95,12 +108,28 @@ int main(int argc, const char** argv)
 					buffer[indices[i]] |= masks[i];
 				}
 			}
-
 			printf("%s", buffer);
 		}
 		printf("\n");
 	}
 
 	stbi_image_free(data);
+}
+
+int main(int argc, char** argv)
+{
+	parseCommandLine(argc, argv);
+
+	if (optind >= argc)
+	{
+		printf("No filepath provided.\n");
+		return 1;
+	}
+
+	for (int i = optind; i < argc; ++i)
+	{
+		processFile(argv[i]);
+	}
+
 	return 0;
 }
