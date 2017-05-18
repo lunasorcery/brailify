@@ -3,6 +3,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb/stb_image_resize.h"
 
 static char ditherTable[64] = {
 	 0,48,12,60, 3,51,15,63,
@@ -20,6 +22,7 @@ const float ditherScale = 1.f / 64.f;
 
 bool flagInvert = false;
 bool flagDither = true;
+int resizeWidth = 0;
 
 float getPixel(unsigned char* data, int w, int h, int x, int y)
 {
@@ -59,11 +62,12 @@ void parseCommandLine(int argc, char** argv)
 		static struct option long_options[] = {
 			{ "nodither", no_argument, 0, 'n' },
 			{ "invert",   no_argument, 0, 'i' },
+			{ "width",    required_argument, 0, 'w' },
 			{ 0, 0, 0, 0 }
 		};
 
 		int option_index = 0;
-		int c = getopt_long(argc, argv, "ni", long_options, &option_index);
+		int c = getopt_long(argc, argv, "niw:", long_options, &option_index);
 
 		if (c == -1)
 			break;
@@ -78,24 +82,43 @@ void parseCommandLine(int argc, char** argv)
 				flagInvert = true;
 				break;
 			}
+			case 'w': {
+				resizeWidth = strtol(optarg, nullptr, 10);
+				if (resizeWidth <= 0) {
+					printf("Width must be greater than zero.\n");
+					exit(1);
+				}
+				break;
+			}
 		}
 	}
 }
 
 void processFile(const char* filepath)
 {
-	int w, h, n;
-	unsigned char *data = stbi_load(filepath, &w, &h, &n, 3);
+	int srcWidth, srcHeight, srcComp;
+	uint8_t* srcData = stbi_load(filepath, &srcWidth, &srcHeight, &srcComp, 3);
+	uint8_t* dstData = srcData;
 
-	if (!data)
+	if (!srcData)
 	{
 		printf("Failed to load image %s.\n", filepath);
 		return;
 	}
 
-	for (int y = 0; y < h; y += 4)
+	int dstWidth  = srcWidth;
+	int dstHeight = srcHeight;
+
+	if (resizeWidth != 0) {
+		dstWidth = resizeWidth * 2;
+		dstHeight = (srcHeight * dstWidth) / srcWidth;
+		dstData = new uint8_t[dstWidth * dstHeight * 3];
+		stbir_resize_uint8(srcData, srcWidth, srcHeight, 0, dstData, dstWidth, dstHeight, 0, 3);
+	}
+
+	for (int y = 0; y < dstHeight; y += 4)
 	{
-		for (int x = 0; x < w; x += 2)
+		for (int x = 0; x < dstWidth; x += 2)
 		{
 			const int indices[8] = { 2, 2, 2, 1, 2, 2, 2, 1 };
 			const unsigned char masks[8] = { 0x01, 0x02, 0x04, 0x01, 0x08, 0x10, 0x20, 0x02 };
@@ -103,7 +126,7 @@ void processFile(const char* filepath)
 			unsigned char buffer[4] = { 0xe2, 0xa0, 0x80, 0x00 };
 			for (int i = 0; i < 8; ++i)
 			{
-				if (getPixel(data, w, h, x + i / 4, y + i % 4) >= .5f)
+				if (getPixel(dstData, dstWidth, dstHeight, x + i / 4, y + i % 4) >= .5f)
 				{
 					buffer[indices[i]] |= masks[i];
 				}
@@ -113,7 +136,11 @@ void processFile(const char* filepath)
 		printf("\n");
 	}
 
-	stbi_image_free(data);
+	if (dstData != srcData)
+	{
+		delete[] dstData;
+	}
+	stbi_image_free(srcData);
 }
 
 int main(int argc, char** argv)
