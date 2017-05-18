@@ -1,4 +1,4 @@
-#Brailify
+# Brailify
 
 Brailify takes images and spits out an approximation of them using Unicode braille characters (U+2800 - U+28FF)
 
