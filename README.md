@@ -1,5 +1,4 @@
-brailify
-========
+# brailify
 
 **brailify** takes images and prints out an approximation of them using characters from the Unicode [Braille Patterns](https://unicode-table.com/en/blocks/braille-patterns/) block.
 
