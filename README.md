@@ -1,33 +1,37 @@
 # brailify
 
-**brailify** takes images and prints out an approximation of them using characters from the Unicode [Braille Patterns](https://unicode-table.com/en/blocks/braille-patterns/) block.
+**brailify** takes images and prints an approximation using characters from the Unicode [Braille Patterns](https://unicode-table.com/en/blocks/braille-patterns/) block.
 
-Usage:
+## Building & Installing
 
-    brailify [options] <path> [path2 [path3...]]
-    
-Options:
+On macOS and Linux, it _should_ be as simple as running the following inside the `brailify` directory:
 
-    -i, --invert          Inverts the source image, for use on a terminal with a light background.
-    -n, --nodither        Disables dithering, ideal if your source image is pure black-and-white.
-    -w, --width <width>   Specifies the output width in chars, useful if your source image is quite large.
+```
+make && make install
+```
+
+Windows is not _officially_ supported, but it'll likely work under WSL.
+
+## Options:
+
+    -i, --invert            Inverts the image, for use with dark text on a light background.
+    -w, --width <width>     Sets the output width in chars, useful for large inputs.
+    -t, --threshold <value> Uses a harsh black/white cutoff in the 0-255 range.
 
 Example usage:
 
-    $ brailify -i test-images/kappa.png 
-    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⡠⣸⣤⣨⡠⣢⣢⣠⣠⡠⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠀⠀⡠⠨⢪⡺⡨⠫⠺⠫⡺⡻⡪⣺⣺⡺⠪⣨⣠⡀⠀⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠠⡪⡠⠪⡨⡪⣠⡺⣨⣾⣪⣿⣾⣿⣺⣫⣾⣻⣾⣿⣦⡀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠨⠨⠪⣨⣺⣪⣪⣾⣺⣾⣻⣾⣻⣺⡻⡺⡻⣾⣾⣿⣿⣿⡃⠀⠀⠀⠀
-    ⠀⠀⠀⠀⢠⣪⣨⣺⣾⣺⣾⣿⣾⡻⣿⡻⡪⠪⠨⠨⠨⠨⠨⠻⣺⣿⣿⡿⠀⠀⠀⠀
-    ⠀⠀⠀⠀⢸⣻⣺⣿⣾⣿⣾⣿⡺⡺⠪⠪⠨⠈⠀⠈⠠⠨⠠⠨⡨⡻⣿⡯⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠸⣻⣾⣿⣾⣻⡨⠺⠪⠈⠠⠈⠀⠀⠠⠈⠠⠈⠨⠨⠨⠪⣺⡯⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠈⣿⣾⣿⣾⡻⠈⠈⠀⠈⠀⣨⣠⣨⡠⠨⠠⡨⣠⣪⣨⣪⣸⡏⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⡨⡻⣿⡪⠀⠀⠨⠠⡺⡮⡾⡺⡺⠪⠊⠨⣺⣾⣿⣺⡿⡪⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠈⠠⠪⠪⠈⠀⠀⠀⠈⠈⠊⠨⠊⠀⠈⠀⠸⡪⠺⠪⠪⠨⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠈⠈⠈⠀⠈⠀⠈⠀⠀⠀⠈⠀⠀⠀⠈⠀⠈⡪⡨⠠⠨⣨⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠀⠈⠀⠈⠀⠈⠠⠨⠠⠨⠨⠈⠺⠺⣠⣪⡪⡪⡪⡺⡪⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠀⠈⠠⠈⠠⠈⠀⠈⠨⠨⣠⡨⣨⣨⣪⣺⣪⡪⠨⡪⡊⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠨⠠⡨⠠⠨⡠⠈⠀⠈⠠⡨⡨⡪⡨⡪⣪⠚⠀⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠪⠪⡨⠨⠠⠈⠨⠪⠨⠪⠨⡺⠀⠀⠀⠀⠀⠀⠀⠀
-    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠊⠪⡪⡠⡪⡪⠺⠺⠊⠀⠀⠀⠀⠀⠀⠀⠀
+    $ brailify smile.png -w 28 -t 128
+    ⠀⠀⠀⠀⠀⠀⠀⢀⣠⣤⣶⣶⣿⣿⣿⣿⣶⣶⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀
+    ⠀⠀⠀⠀⢀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣤⡀⠀⠀⠀⠀
+    ⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⠀⠀⠀
+    ⠀⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⡀⠀
+    ⢀⣾⣿⣿⣿⣿⣿⡟⠁⠀⠈⣿⣿⣿⣿⣿⣿⠁⠀⠈⢻⣿⣿⣿⣿⣿⣷⡀
+    ⢸⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⣿⣿⣿⣿⣿⣿⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⡇
+    ⣿⣿⣿⣿⣿⣿⣿⣿⣦⣤⣴⣿⣿⣿⣿⣿⣿⣦⣤⣴⣿⣿⣿⣿⣿⣿⣿⣿
+    ⣿⣿⣿⣿⣿⣿⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣿⣿⣿⣿⣿⣿
+    ⢸⣿⣿⣿⣿⡇⠀⢤⣀⣀⣀⣉⡉⠉⠉⢉⣉⣀⣀⣀⡤⠀⢸⣿⣿⣿⣿⡇
+    ⠈⢿⣿⣿⣿⣷⡀⠀⠙⠿⢿⣿⣿⣿⣿⣿⣿⡿⠿⠋⠀⢀⣾⣿⣿⣿⡿⠁
+    ⠀⠈⢿⣿⣿⣿⣷⣄⠀⠀⠀⠀⠈⠉⠉⠁⠀⠀⠀⠀⣠⣾⣿⣿⣿⡿⠁⠀
+    ⠀⠀⠀⠻⣿⣿⣿⣿⣷⣤⣀⡀⠀⠀⠀⠀⢀⣀⣤⣾⣿⣿⣿⣿⠟⠀⠀⠀
+    ⠀⠀⠀⠀⠈⠛⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠁⠀⠀⠀⠀
+    ⠀⠀⠀⠀⠀⠀⠀⠈⠙⠛⠿⠿⣿⣿⣿⣿⠿⠿⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀

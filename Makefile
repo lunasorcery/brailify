@@ -1,7 +1,13 @@
-make: brailify
+all: bin/brailify
 
-brailify: main.cpp
-	clang main.cpp -o brailify -Wall -std=c++11 -lstdc++
+bin/brailify: main.cpp
+	mkdir -p bin/
+	$(CXX) main.cpp -std=c++17 -lstdc++ -o bin/brailify -Wall -Wextra -Wpedantic
+
+install: bin/brailify
+	cp bin/brailify /usr/local/bin/brailify
 
 clean:
-	rm -f brailify
+	rm -rf bin/
+
+.PHONY: all install clean
