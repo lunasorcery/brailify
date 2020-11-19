@@ -6,9 +6,9 @@ jobs:
       - image: gcc:8.2
     steps:
       - checkout
-      - run:
-          name: Compile
-          command: make
+      - run: git submodule init
+      - run: git submodule update --remote
+      - run: make
 
 workflows:
   version: 2
